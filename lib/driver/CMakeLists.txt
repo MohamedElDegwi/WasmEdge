@@ -4,6 +4,7 @@
 set(SOURCES
   compilerTool.cpp
   runtimeTool.cpp
+  validate.cpp
   fuzzTool.cpp
   fuzzPO.cpp
   uniTool.cpp

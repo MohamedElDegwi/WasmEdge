@@ -5,6 +5,7 @@
 #include "common/spdlog.h"
 #include "driver/compiler.h"
 #include "driver/tool.h"
+#include "driver/validate.h"
 #include "po/argument_parser.h"
 
 #include <string_view>
@@ -24,8 +25,11 @@ int UniTool(int Argc, const char *Argv[], const ToolType ToolSelect) noexcept {
       PO::Description("Wasmedge runtime tool subcommand"sv));
   PO::SubCommand CompilerSubCommand(
       PO::Description("Wasmedge compiler subcommand"sv));
+  PO::SubCommand ValidateSubCommand(
+      PO::Description("Wasmedge validate subcommand"sv));
   struct DriverToolOptions ToolOptions;
   struct DriverCompilerOptions CompilerOptions;
+  struct DriverValidateOptions ValidateOptions;
 
   // Construct Parser Subcommands and Options
   if (ToolSelect == ToolType::All) {
@@ -38,10 +42,17 @@ int UniTool(int Argc, const char *Argv[], const ToolType ToolSelect) noexcept {
     Parser.begin_subcommand(ToolSubCommand, "run"sv);
     ToolOptions.add_option(Parser);
     Parser.end_subcommand();
+
+    Parser.begin_subcommand(ValidateSubCommand, "validate"sv);
+    ValidateOptions.add_option(Parser);
+    Parser.end_subcommand();
+
   } else if (ToolSelect == ToolType::Tool) {
     ToolOptions.add_option(Parser);
   } else if (ToolSelect == ToolType::Compiler) {
     CompilerOptions.add_option(Parser);
+  } else if (ToolSelect == ToolType::Validate) {
+    ValidateOptions.add_option(Parser);
   } else {
     return EXIT_FAILURE;
   }
@@ -70,6 +81,8 @@ int UniTool(int Argc, const char *Argv[], const ToolType ToolSelect) noexcept {
   } else if (CompilerSubCommand.is_selected() ||
              ToolSelect == ToolType::Compiler) {
     return Compiler(CompilerOptions);
+  } else if (ValidateSubCommand.is_selected()) {
+    return Validator(ValidateOptions);
   } else {
     return Tool(ToolOptions);
   }

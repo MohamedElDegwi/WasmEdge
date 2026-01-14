@@ -29,7 +29,7 @@ int Validator(struct DriverValidateOptions &Opt) noexcept {
   if (auto Res = WasmLoader.loadFile(Opt.WasmName.value())) {
     Data = *Res;
   } else {
-    std::cerr << "check on your file it's not found or maybe inaccessible."
+    std::cerr << "Err: check on your file it's not found or maybe inaccessible."
               << std::endl;
     return 1;
   }
@@ -37,16 +37,17 @@ int Validator(struct DriverValidateOptions &Opt) noexcept {
   auto Module = std::make_unique<AST::Module>();
   if (auto Res = WasmLoader.parseModule(Data)) {
     Module = std::move(*Res);
-    std::cout << "parsing successfull. good till now :)" << std::endl;
+    std::cout << "PASS: parsing successfull." << std::endl;
   } else {
-    std::cerr << "check on file content. thats not pure web asm" << std::endl;
+    std::cerr << "FAIL: check on file content. Parsing Error." << std::endl;
     return 1;
   }
 
   if (auto Res = WasmValidator.validate(*Module)) {
-    std::cout << "Congratulations! Validation is successfull :) " << std::endl;
+    std::cout << "PASS: Congratulations! Validation successfull :) "
+              << std::endl;
   } else {
-    std::cerr << "validation went wrong :(" << std::endl;
+    std::cerr << "FAIL: validation Error :(" << std::endl;
     return 1;
   }
 

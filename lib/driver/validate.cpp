@@ -12,17 +12,13 @@
 namespace WasmEdge {
 namespace Driver {
 
-void DriverValidateOptions::add_option(PO::ArgumentParser &Parser) noexcept {
-
-  Parser.add_option("wasm-file", WasmName);
-
-  Parser.add_option("args", Args);
-}
+using namespace std::literals;
 
 int Validator(struct DriverValidateOptions &Opt) noexcept {
-  std::cout << "running validation on: " << Opt.WasmName.value()
-            << " let's see what's gonna happen!" << std::endl;
+  spdlog::info("Starting validation on : {}"sv, Opt.WasmName.value());
 
+  // using default configure for now, but this should be changed in week 4 when
+  // configs args and other options are available.
   Configure Conf;
   Loader::Loader WasmLoader(Conf);
   Validator::Validator WasmValidator(Conf);
@@ -32,25 +28,27 @@ int Validator(struct DriverValidateOptions &Opt) noexcept {
   if (auto Res = WasmLoader.loadFile(Opt.WasmName.value())) {
     Data = *Res;
   } else {
-    std::cerr << "Err: check on your file it's not found or maybe inaccessible."
-              << std::endl;
+    spdlog::error("Load failed. Error code: {}"sv,
+                  static_cast<uint32_t>(Res.error()));
     return 1;
   }
 
   auto Module = std::make_unique<AST::Module>();
   if (auto Res = WasmLoader.parseModule(Data)) {
     Module = std::move(*Res);
-    std::cout << "PASS: parsing successful." << std::endl;
+    spdlog::info(
+        "File content check passed. Successfully parsed the module."sv);
   } else {
-    std::cerr << "FAIL: check on file content. Parsing Error." << std::endl;
+    spdlog::error("Parsing failed. Error code: {}"sv,
+                  static_cast<uint32_t>(Res.error()));
     return 1;
   }
 
   if (auto Res = WasmValidator.validate(*Module)) {
-    std::cout << "PASS: Congratulations! Validation successful :) "
-              << std::endl;
+    spdlog::info("Validation passed. The module is valid."sv);
   } else {
-    std::cerr << "FAIL: validation Error :(" << std::endl;
+    spdlog::error("Validation failed. Error code: {}"sv,
+                  static_cast<uint32_t>(Res.error()));
     return 1;
   }
 

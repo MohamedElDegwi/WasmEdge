@@ -37,14 +37,14 @@ int Validator(struct DriverValidateOptions &Opt) noexcept {
   auto Module = std::make_unique<AST::Module>();
   if (auto Res = WasmLoader.parseModule(Data)) {
     Module = std::move(*Res);
-    std::cout << "PASS: parsing successfull." << std::endl;
+    std::cout << "PASS: parsing successful." << std::endl;
   } else {
     std::cerr << "FAIL: check on file content. Parsing Error." << std::endl;
     return 1;
   }
 
   if (auto Res = WasmValidator.validate(*Module)) {
-    std::cout << "PASS: Congratulations! Validation successfull :) "
+    std::cout << "PASS: Congratulations! Validation successful :) "
               << std::endl;
   } else {
     std::cerr << "FAIL: validation Error :(" << std::endl;

@@ -37,7 +37,7 @@ std::filesystem::path createValidWasmFile() {
   return TempPath;
 }
 
-// Please note those tests keept minimal for the poc purpose.
+// Please note those tests kept minimal for the poc purpose.
 // More tests should be added in week 4 when fully implementing the validate.
 
 TEST(ValidateTest, ValidModule) {

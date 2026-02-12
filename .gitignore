@@ -80,6 +80,9 @@ bindings/rust/wasmedge-sys/examples/.ipynb_checkpoints/*
 
 node_modules/
 
+# neovim cpp language server
+.ccls-cache
+
 # intelliJ IDEA
 **/.idea/*
 **.iml
